@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>签到系统</title>
+    <script th:src="@{/static/login/jquery.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/static/login/css/layui.css}">
+    <link rel="stylesheet" th:href="@{/static/login/css/adminLogin.css}">
+</head>
+<body>
+<div class="wrap">
+    <img th:src="@{/static/login/images/background.jpg}" class="imgStyle">
+    <div class="loginForm">
+        <form>
+            <div class="logoHead" style="width: auto">
+                <h1 style="margin-left: 70px">签到</h1>
+            </div>
+            <div class="usernameWrapDiv">
+                <div class="usernameLabel">
+                    <label>用户名:</label>
+                </div>
+                <div class="usernameDiv">
+                    <i class="layui-icon layui-icon-username adminIcon"></i>
+                    <input id="loginUsername" class="layui-input adminInput" type="text" name="username" placeholder="输入用户名" >
+                </div>
+            </div>
+            <div class="usernameWrapDiv">
+                <div class="usernameLabel">
+                    <label>密码:</label>
+                </div>
+                <div class="passwordDiv">
+                    <i class="layui-icon layui-icon-password adminIcon"></i>
+                    <input id="loginPassword" class="layui-input adminInput" type="password" name="password" placeholder="输入密码">
+                </div>
+            </div>
+            <div class="usernameWrapDiv aaaa"  >
+                <input id="loginBtn"  style="width: 25%;display: inline-block "  type="button"  class="submit layui-btn layui-btn-primary" value="签到"/>
+                <input id="offBtn" type="button" style="width: 25%;display: inline-block "  class="submit layui-btn layui-btn-primary" value="签退"/>
+                <input id="login" type="button" style="display: inline-block "  class="submit layui-btn layui-btn-primary" value="后台登录"/>
+            </div>
+        </form>
+    </div>
+</div>
+<script th:src="@{/static/login/layui.all.js}" type="text/javascript"></script>
+<script>
+    Date.prototype.Format = function (fmt) {
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "H+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+
+    layui.use(['layer'],function () {
+        var layer = layui.layer;
+    })
+    var d = new Date();
+    var nowdate = d.Format("yyyy-MM-dd HH:mm:ss")
+    // var nowdate = d.toLocaleString('cn',{hour12:false})
+
+
+
+    $("#loginBtn").click(function () {
+        var loginUsername = $('#loginUsername').val();
+        var loginPassword = $('#loginPassword').val();
+        if ($.trim(loginUsername) == '' || $.trim(loginUsername).length<=0){
+            layer.alert("用户名不能为空",{icon: 5});
+            return false;
+        }
+        if ($.trim(loginPassword) == '' || $.trim(loginPassword).length<=0){
+            // layer.msg("删除失败", {icon: 5});
+            layer.alert("密码不能为空",{icon: 5});
+            return false;
+        }
+        var d={"username":loginUsername,"password":loginPassword,"ontime":nowdate};
+        $.ajax({
+            url:'/onworks/insert',
+            data:JSON.stringify(d),
+            type:"post",
+            dataType:'json',
+            contentType: "application/json;charset=utf-8",
+            success:function (data){
+                if (data.msg!=1){
+                    // alert(data.msg);
+                    layer.alert(data.msg,{icon:5});
+                    // layer.alert(data.msg+"请重新登录",{icon: 5});
+                    // window.self.location="/"
+                    // location.reload()
+                }else{
+                    // layer.alert("登录成功",{icon: 6});
+                    // window.self.location="/home"
+                    layer.alert("签到成功",{icon:6});
+                }
+            }
+
+        });
+
+    })
+    $("#offBtn").click(function () {
+        var loginUsername = $('#loginUsername').val();
+        var loginPassword = $('#loginPassword').val();
+        if ($.trim(loginUsername) == '' || $.trim(loginUsername).length<=0){
+            layer.alert("用户名不能为空",{icon: 5});
+            return false;
+        }
+        if ($.trim(loginPassword) == '' || $.trim(loginPassword).length<=0){
+            // layer.msg("删除失败", {icon: 5});
+            layer.alert("密码不能为空",{icon: 5});
+            return false;
+        }
+        var d={"username":loginUsername,"password":loginPassword,"offtime":nowdate};
+        $.ajax({
+            url:'/offworks/insert',
+            data:JSON.stringify(d),
+            type:"post",
+            dataType:'json',
+            contentType: "application/json;charset=utf-8",
+            success:function (data){
+                if (data.msg!=1){
+                    layer.alert(data.msg,{icon:5});
+                    // layer.alert(data.msg+"请重新登录",{icon: 5});
+                    // window.self.location="/"
+                    // location.reload()
+                }else{
+                    // layer.alert("登录成功",{icon: 6});
+                    // window.self.location="/home"
+                    layer.alert("签退成功",{icon:6});
+                }
+            }
+
+        });
+
+    })
+    $("#login").click(function () {
+        var loginUsername = $('#loginUsername').val();
+        var loginPassword = $('#loginPassword').val();
+        if ($.trim(loginUsername) == '' || $.trim(loginUsername).length<=0){
+            layer.alert("用户名不能为空",{icon: 5});
+            return false;
+        }
+        if ($.trim(loginPassword) == '' || $.trim(loginPassword).length<=0){
+            // layer.msg("删除失败", {icon: 5});
+            layer.alert("密码不能为空",{icon: 5});
+            return false;
+        }
+        var d={"username":loginUsername,"password":loginPassword};
+        $.ajax({
+            url:'/wUserss/login',
+            data:JSON.stringify(d),
+            type:"post",
+            dataType:'json',
+            contentType: "application/json;charset=utf-8",
+            success:function (data){
+                if (data.msg==1){
+                    layer.alert("登录成功",{icon:6});
+
+                    // layer.alert(data.msg+"请重新登录",{icon: 5});
+                    // window.self.location="/"
+                    // location.reload()
+                }else{
+                    layer.alert(data.msg,{icon:5});
+                }
+            }
+
+        });
+
+    })
+
+</script>
+</body>
+</html>

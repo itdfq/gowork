@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>栽培管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../lib/layui-v/css/layui.css" media="all">
+    <link rel="stylesheet" href="../css/public.css" media="all">
+    <script src="/static/layuimini/js/jquery.min.js"></script>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>栽培管理</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+<!--                            <label class="layui-form-label">栽培年份</label>-->
+<!--                            <div class="layui-input-inline">-->
+<!--&lt;!&ndash;                                <input type="date" name="zaiPeiNianFen" autocomplete="off" class="layui-input" placeholder="yyyy-MM-dd">&ndash;&gt;-->
+<!--                                <input type="date" name="zaiPeiNianFen" class="layui-input" id="test1" placeholder="yyyy-MM-dd">-->
+<!--                            </div>-->
+                            <label class="layui-form-label">栽培年份</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="zaiPeiNianFen" id="date2" lay-verify="date" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container" id="gongju">
+                <!--                <a th:if="${session.user.realname}" ><span th:text="${session.user.realname}"/></a>-->
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加 </button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="deleteSelect">删除选中行数据</button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar" aria-invalid="gongju1">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+        </script>
+        <script>
+
+        </script>
+
+    </div>
+</div>
+<script src="../lib/layui-v/layui.js" charset="utf-8"></script>
+<script>
+
+
+    $(function (){
+        $.ajax({
+            url: '/tAdmins/findByUser',
+            type: 'post',
+            success: function (data) {
+                if (data.msg != 1) {
+                    layer.msg("登录过期请重新登录", {icon: 5});
+                    window.self.location = "/";
+                    return;
+                }
+            }
+        })
+    })
+
+    layui.use(['form', 'table','laydate'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table,
+            laydate = layui.laydate;
+
+        //日期
+        laydate.render({
+            elem: '#date2'
+        });
+        //表格界面
+        table.render({
+            elem: '#currentTableId',
+            url: '/tZpglsjs/findByPage',
+            toolbar: '#toolbarDemo',
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示',
+                icon: 'layui-icon-tips'
+            }]
+            ,id:"id"
+            ,cols: [[
+                // ,{field:'custId', title:'ID', width:'10%', fixed: 'left', unresize: true, sort: true, totalRowText: '合计'}
+                //,{field:'realname', title:'姓名', width:150 }
+                // ,{field:'email', title:'邮箱', width:150, edit: 'text', templet: function(res){
+                //         return '<em>'+ res.email +'</em>'
+                //     }}
+                {type: 'checkbox', fixed: 'left',align:'center'}
+                ,{field:'zaiPeiNianFen', title:'栽培年份', width:150,  sort: true}
+                ,{field:'tuRangQianZuo', title:'土壤和前作', width:150,  sort: true}
+                ,{field:'gengDiZhengDi', title:'耕地与征地', width:150, sort: true }
+                ,{field:'boZhongQi', title:'播种期', width:150, sort: true}
+                ,{field:'yiMiaoQi', title:'移苗期', width:150,  sort: true}
+                ,{field:'jianMiaoQi', title:'间苗期', width:150,  sort: true}
+                ,{field:'dingMiaoQi', title:'定苗期', width:150, sort: true}
+                ,{field:'zhongGengChuCao01', title:'中耕除草第1次', width:150, sort: true}
+                ,{field:'zhongGengChuCao02', title:'中耕除草第2次', width:150,  sort: true}
+                ,{field:'zhongGengChuCao03', title:'中耕除草第3次', width:150,  sort: true}
+                ,{field:'zhongGengChuCao04', title:'中耕除草第4次', width:150, sort: true}
+                ,{field:'zhongGengChuCao05', title:'中耕除草第5次', width:150, sort: true}
+                ,{field:'zhongGengChuCao06', title:'中耕除草第6次', width:150,  sort: true}
+                ,{field:'zhongGengChuCao07', title:'中耕除草第7次', width:150,  sort: true}
+                ,{field:'zhongGengChuCao08', title:'中耕除草第8次', width:150, sort: true}
+                ,{field:'zhongGengChuCao09', title:'中耕除草第9次', width:150, sort: true}
+                ,{field:'zhongGengChuCao10', title:'中耕除草第10次', width:150,sort: true}
+                ,{field:'zhongGengChuCao11', title:'中耕除草第11次', width:150,sort: true}
+                ,{field:'zhongGengChuCao12', title:'中耕除草第12次', width:150, sort: true}
+                ,{field:'peituqi', title:'培土期', width:150, sort: true}
+                ,{field:'jiFei', title:'施肥--基肥', width:150,  sort: true}
+                ,{field:'zhuiFeiDate1', title:'施肥--追肥第1次日期', width:150,  sort: true}
+                ,{field:'zhuiFei1', title:'施肥--追肥', width:150,  sort: true}
+                ,{field:'zhuiFeiDate2', title:'施肥--追肥第2次日期', width:150,  sort: true}
+                ,{field:'zhuiFei2', title:'施肥--追肥', width:150,  sort: true}
+                ,{field:'zhuiFeiDate3', title:'施肥--追肥第3次日期', width:150,  sort: true}
+                ,{field:'zhuiFei3', title:'施肥--追肥', width:150,  sort: true}
+                ,{field:'zhuiFeiDate4', title:'施肥--追肥第4次日期', width:150,  sort: true}
+                ,{field:'zhuiFei4', title:'施肥--基肥', width:150,  sort: true}
+                ,{field:'guanGai1', title:'灌溉第1次', width:150,  sort: true}
+                ,{field:'guanGai2', title:'灌溉第2次', width:150,  sort: true}
+                ,{field:'guanGai3', title:'灌溉第3次', width:150,  sort: true}
+                ,{field:'guanGai4', title:'灌溉第4次', width:150,  sort: true}
+                ,{field:'guanGai5', title:'灌溉第5次', width:150,  sort: true}
+                ,{field:'guanGai6', title:'灌溉第6次', width:150,  sort: true}
+                ,{field:'guanGai7', title:'灌溉第7次', width:150,  sort: true}
+                ,{field:'guanGai8', title:'灌溉第8次', width:150,  sort: true}
+                ,{field:'guanGai9', title:'灌溉第9次', width:150,  sort: true}
+                ,{field:'zhengZhi1', title:'整枝第1次', width:150,  sort: true}
+                ,{field:'zhengZhi2', title:'整枝第2次', width:150,  sort: true}
+                ,{field:'zhengZhi3', title:'整枝第3次', width:150,  sort: true}
+                ,{field:'daDing', title:'打顶', width:150,  sort: true}
+                ,{field:'bingChongFangZhiDate1', title:'病虫防止第1次日期', width:150,  sort: true}
+                ,{field:'bingChongFangZhi1', title:'病虫防止第1次', width:150,  sort: true}
+                ,{field:'bingChongFangZhiDate2', title:'病虫防止第2次日期', width:150,  sort: true}
+                ,{field:'bingChongFangZhi2', title:'病虫防止第2次', width:150,  sort: true}
+                ,{field:'bingChongFangZhiDate3', title:'病虫防止第3次日期', width:150,  sort: true}
+                ,{field:'bingChongFangZhi3', title:'病虫防止第3次', width:150,  sort: true}
+                ,{field:'bingChongFangZhiDate4', title:'病虫防止第4次日期', width:150,  sort: true}
+                ,{field:'bingChongFangZhi4', title:'病虫防止第4次', width:150,  sort: true}
+                ,{field:'bingChongFangZhiDate5', title:'病虫防止第5次日期', width:150,  sort: true}
+                ,{field:'bingChongFangZhi5', title:'病虫防止第5次', width:150,  sort: true}
+                ,{field:'bingChongFangZhiDate6', title:'病虫防止第6次日期', width:150,  sort: true}
+                ,{field:'bingChongFangZhi6', title:'病虫防止第6次', width:150,  sort: true}
+                ,{field:'huaTiaoDate1', title:'化调第1次日期', width:150,  sort: true}
+                ,{field:'huaTiao1', title:'化调第1次', width:150,  sort: true}
+                ,{field:'huaTiaoDate2', title:'化调第2次日期', width:150,  sort: true},
+                ,{field:'huaTiao2', title:'化调第2次', width:150,  sort: true}
+                ,{field:'huaTiaoDate3', title:'化调第3次日期', width:150,  sort: true}
+                ,{field:'huaTiao3', title:'化调第3次', width:150,  sort: true},
+                ,{field:'huaTiaoDate4', title:'化调第4次日期', width:150,  sort: true}
+                ,{field:'huaTiao4', title:'化调第4次', width:150,  sort: true}
+                ,{field:'shouHuaQi1', title:'收花期第1次', width:150,  sort: true},
+                ,{field:'shouHuaQi2', title:'收花期第2次', width:150,  sort: true},
+                ,{field:'shouHuaQi3', title:'收花期第3次', width:150,  sort: true},
+                ,{field:'sjqChuShuang', title:'霜降期--初霜', width:150,  sort: true},
+                ,{field:'sjqKuShuang', title:'霜降期--枯霜', width:150,  sort: true},
+                ,{field:'qiuGeng', title:'秋耕', width:150,  sort: true},
+                ,{field:'belongToAccount', title:'所属账户', width:150, sort: true }
+                ,{field:'mark', title:'备注', width:150,  sort: true}
+                ,{title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "center"}
+            ]], page: true
+        });
+        // $(function (){
+        //     $.ajax({
+        //         url: '/users/findByUser',
+        //         type: 'post',
+        //         success: function (data) {
+        //             if (data.msg != 1) {
+        //                 layer.msg("登录过期请重新登录", {icon: 5});
+        //                 window.self.location = "/";
+        //                 return;
+        //             }else{
+        //                 if (data.role!=1){
+        //                     layer.msg("对不起您无权限查看", {icon: 5});
+        //                 }else{
+        //                 }
+        //             }
+        //         }
+        //     })
+        // })
+
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            var result = JSON.stringify(data.field);
+            // layer.alert(result, {
+            //     title: '最终的搜索信息'
+            // });
+
+            // 执行搜索重载
+
+            table.reload('id',{
+                url: '/tZpglsjs/findByTJ'
+                ,method:'post'
+                ,where: {
+                    'zaiPeiNianFen':data.field.zaiPeiNianFen,
+
+                }
+                ,contentType: 'application/json'
+                ,page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            })
+            return false;
+
+        });
+
+        /**
+         * toolbar监听事件
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            if (obj.event === 'add') {  // 监听添加操作
+                var index = layer.open({
+                    title: '添加用户',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: '../page/table/addzpgjsj.html',
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+
+            } else if (obj.event === 'deleteSelect') {  // 监听删除操作
+                var data = checkStatus.data;
+                var id="";
+                if(data.length > 0) {
+                    for (var i=0;i<data.length;i++) {
+                        id+=data[i].id+",";
+                    }
+                    console.log(id);
+                    layer.confirm('确定删除选中的数据？', {icon: 3, title: '提示信息'}, function (index) {
+                        $.post('/tZpglsjs/deleteSelect',{"id":id},function(data){
+                            if (data.msg==1){
+                                layer.msg("删除成功", {icon: 6});
+                                layer.close(index);
+                                // 表格重载
+                                table.reload('id',{
+                                    page: {
+                                        curr: 1 //重新从第 1 页开始
+                                    }
+                                })
+                            }
+
+                        });
+                    })
+                }else{
+                    layer.msg('请选择需要删除的数据',{icon:5});
+                }
+
+            }
+
+        });
+        //监听表格复选框选择
+        table.on('checkbox(currentTableFilter)', function (obj) {
+            console.log(obj)
+        });
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            if (obj.event === 'edit') {
+                $.ajax({
+                    url: '/tAdmins/findByUser',
+                    type: 'post',
+                    success: function (data) {
+                        if (data.msg != 1) {
+                            alert(data.msg);
+                            window.parent.location.href = "/";
+                            // $.messager.alert({
+                            //     title:'提示',
+                            //     msg:'读取数据异常：'+map.msg
+                            // });
+                            return;
+                        }else {
+                            if (data.role=="1"){
+                                layer.msg("您没有权限操作", {icon: 5});
+
+                            }else{
+                                var data = obj.data;
+                                var index = layer.open({
+                                    title: '编辑用户',
+                                    type: 2,
+                                    shade: 0.2,
+                                    maxmin:true,
+                                    shadeClose: true,
+                                    area: ['100%', '100%'],
+                                    content: '../page/table/edit_zpgjsj.html',
+                                    success: function (layero, index) {
+                                        //找到它的子窗口的body
+                                        let body = layer.getChildFrame('body', index);
+                                        // var body = layer.getChildFrame('body', table);  //巧妙的地方在这里哦
+                                        // //为子窗口元素赋值
+                                        body.contents().find("#id").val(data.id);
+                                        body.contents().find("#belongToAccount").val(data.belongToAccount);
+                                        body.contents().find("#zaiPeiNianFen").val(data.zaiPeiNianFen);
+                                        body.contents().find("#tuRangQianZuo").val(data.tuRangQianZuo);
+                                        body.contents().find("#gengDiZhengDi").val(data.gengDiZhengDi);
+                                        body.contents().find("#boZhongQi").val(data.boZhongQi);
+                                        body.contents().find("#yiMiaoQi").val(data.yiMiaoQi);
+                                        body.contents().find("#jianMiaoQi").val(data.jianMiaoQi);
+                                        body.contents().find("#dingMiaoQi").val(data.dingMiaoQi);
+                                        body.contents().find("#zhongGengChuCao01").val(data.zhongGengChuCao01);
+                                        body.contents().find("#zhongGengChuCao02").val(data.zhongGengChuCao02);
+                                        body.contents().find("#zhongGengChuCao03").val(data.zhongGengChuCao03);
+                                        body.contents().find("#zhongGengChuCao04").val(data.zhongGengChuCao04);
+                                        body.contents().find("#zhongGengChuCao05").val(data.zhongGengChuCao05);
+                                        body.contents().find("#zhongGengChuCao06").val(data.zhongGengChuCao06);
+                                        body.contents().find("#zhongGengChuCao07").val(data.zhongGengChuCao07);
+                                        body.contents().find("#zhongGengChuCao08").val(data.zhongGengChuCao08);
+                                        body.contents().find("#zhongGengChuCao09").val(data.zhongGengChuCao09);
+                                        body.contents().find("#zhongGengChuCao10").val(data.zhongGengChuCao10);
+                                        body.contents().find("#zhongGengChuCao11").val(data.zhongGengChuCao11);
+                                        body.contents().find("#zhongGengChuCao12").val(data.zhongGengChuCao12);
+                                        body.contents().find("#peituqi").val(data.peituqi);
+                                        body.contents().find("#jiFei").val(data.jiFei);
+                                        body.contents().find("#zhuiFeiDate1").val(data.zhuiFeiDate1);
+                                        body.contents().find("#zhuiFei1").val(data.zhuiFei1);
+                                        body.contents().find("#zhuiFeiDate2").val(data.zhuiFeiDate2);
+                                        body.contents().find("#zhuiFei2").val(data.zhuiFei2);
+                                        body.contents().find("#zhuiFeiDate3").val(data.zhuiFeiDate3);
+                                        body.contents().find("#zhuiFei3").val(data.zhuiFei3);
+                                        body.contents().find("#zhuiFeiDate4").val(data.zhuiFeiDate4);
+                                        body.contents().find("#zhuiFei4").val(data.zhuiFei4);
+                                        body.contents().find("#guanGai1").val(data.guanGai1);
+                                        body.contents().find("#guanGai2").val(data.guanGai2);
+                                        body.contents().find("#guanGai3").val(data.guanGai3);
+                                        body.contents().find("#guanGai4").val(data.guanGai4);
+                                        body.contents().find("#guanGai5").val(data.guanGai5);
+                                        body.contents().find("#guanGai6").val(data.guanGai6);
+                                        body.contents().find("#guanGai7").val(data.guanGai7);
+                                        body.contents().find("#guanGai8").val(data.guanGai8);
+                                        body.contents().find("#guanGai9").val(data.guanGai9);
+                                        body.contents().find("#zhengZhi1").val(data.zhengZhi1);
+                                        body.contents().find("#zhengZhi2").val(data.zhengZhi2);
+                                        body.contents().find("#zhengZhi3").val(data.zhengZhi3);
+                                        body.contents().find("#daDing").val(data.daDing);
+                                        body.contents().find("#bingChongFangZhiDate1").val(data.bingChongFangZhiDate1);
+                                        body.contents().find("#bingChongFangZhi1").val(data.bingChongFangZhi1);
+                                        body.contents().find("#bingChongFangZhiDate2").val(data.bingChongFangZhiDate2);
+                                        body.contents().find("#bingChongFangZhi2").val(data.bingChongFangZhi2);
+                                        body.contents().find("#bingChongFangZhiDate3").val(data.bingChongFangZhiDate3);
+                                        body.contents().find("#bingChongFangZhi3").val(data.bingChongFangZhi3);
+                                        body.contents().find("#bingChongFangZhiDate4").val(data.bingChongFangZhiDate4);
+                                        body.contents().find("#bingChongFangZhi4").val(data.bingChongFangZhi4);
+                                        body.contents().find("#bingChongFangZhiDate5").val(data.bingChongFangZhiDate5);
+                                        body.contents().find("#bingChongFangZhi5").val(data.bingChongFangZhi5);
+                                        body.contents().find("#bingChongFangZhiDate6").val(data.bingChongFangZhiDate6);
+                                        body.contents().find("#bingChongFangZhi6").val(data.bingChongFangZhi6);
+                                        body.contents().find("#huaTiaoDate1").val(data.huaTiaoDate1);
+                                        body.contents().find("#huaTiao1").val(data.huaTiao1);
+                                        body.contents().find("#huaTiaoDate2").val(data.huaTiaoDate2);
+                                        body.contents().find("#huaTiao2").val(data.huaTiao2);
+                                        body.contents().find("#huaTiaoDate3").val(data.huaTiaoDate3);
+                                        body.contents().find("#huaTiao3").val(data.huaTiao3);
+                                        body.contents().find("#huaTiaoDate4").val(data.huaTiaoDate4);
+                                        body.contents().find("#huaTiao4").val(data.huaTiao4);
+                                        body.contents().find("#shouHuaQi1").val(data.shouHuaQi1);
+                                        body.contents().find("#shouHuaQi2").val(data.shouHuaQi2);
+                                        body.contents().find("#shouHuaQi3").val(data.shouHuaQi3);
+                                        body.contents().find("#sjqChuShuang").val(data.sjqChuShuang);
+                                        body.contents().find("#sjqKuShuang").val(data.sjqKuShuang);
+                                        body.contents().find("#qiuGeng").val(data.qiuGeng);
+                                        body.contents().find("#mark").val(data.mark);
+                                    }
+                                });
+                                $(window).on("resize", function () {
+                                    layer.full(index);
+                                });
+                                return false;
+                            }
+                        }
+                    }
+                })
+
+            } else if (obj.event === 'delete') {
+
+                $.ajax({
+                    url: '/tAdmins/findByUser',
+                    type: 'post',
+                    success: function (data) {
+                        if (data.msg != 1) {
+                            alert(data.msg);
+                            window.parent.location.href = "/";
+                            // $.messager.alert({
+                            //     title:'提示',
+                            //     msg:'读取数据异常：'+map.msg
+                            // });
+                            return;
+                        }else {
+                            if (data.role=="1"){
+                                layer.msg("您没有权限操作", {icon: 5});
+                            }else {
+                                var data = obj.data;
+                                var d = {"id": data.id};
+                                var datas = JSON.stringify(d);
+                                layer.confirm('真的删除行么',{icon:3, title:'提示信息'}, function (index) {
+                                    $.ajax({
+                                        url: "/tZpglsjs/delete",
+                                        type: 'post',
+                                        data: datas,
+                                        contentType: "application/json;charset=utf-8",
+                                        dataType: 'json',
+                                        async: false,//false为同步，这个Ajax请求将整个浏览器锁死
+                                        success: function (data) {
+                                            if (data.msg == 1) {
+                                                //删除这一行
+                                                obj.del();
+                                                //关闭弹框
+                                                layer.close(index);
+                                                layer.msg("删除成功", {icon: 6});
+                                            } else {
+                                                layer.msg("删除失败", {icon: 5});
+                                            }
+                                        }
+                                    });
+                                    return false;
+                                });
+                            }
+                        }
+                    }
+                })
+
+            }
+        });
+
+
+    });
+</script>
+
+</body>
+</html>
