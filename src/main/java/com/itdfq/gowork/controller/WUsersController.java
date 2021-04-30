@@ -1,6 +1,8 @@
 package com.itdfq.gowork.controller;
 
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.itdfq.gowork.model.Sum;
 import com.itdfq.gowork.model.WUsers;
 import com.itdfq.gowork.service.WUsersService;
 import io.swagger.annotations.Api;
@@ -11,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -55,7 +59,7 @@ public class WUsersController {
         }
         return map;
     }
-
+    //检查用户是否登录
     @RequestMapping("/findByUser")
     public Map<String,Object> findByUser(HttpSession session){
         try {
@@ -65,9 +69,111 @@ public class WUsersController {
                 return map;
             }else {
                 map.put("msg",1);
+                map.put("role",user.getRole());
                 return map;
             }
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("msg",e.getMessage());
+        }
+        return map;
+    }
+
+    @RequestMapping("/findByPage")
+    //分页查询
+    public Map<String,Object> findByPage(@ApiParam("页号") @RequestParam(defaultValue = "1") Integer page,
+                                         @ApiParam("每页大小") @RequestParam(defaultValue = "10") Integer limit){
+        map.clear();
+        PageHelper.startPage(page,limit);
+        try {
+            List<WUsers> byPage = wUsersService.findByPage();
+            PageInfo<WUsers> pageInfo = new PageInfo<>(byPage);
+            map.put("count",pageInfo.getTotal());
+            map.put("data",pageInfo.getList());
+            map.put("code",0);
+            map.put("msg",1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("msg",e.getMessage());
+        }
+        return map;
+    }
+
+    //分页条件查询
+    @RequestMapping("/findByTJ")
+    public Map<String,Object> findByPageTJ(@ApiParam("页号") @RequestParam(defaultValue = "1") Integer page,
+                                         @ApiParam("每页大小") @RequestParam(defaultValue = "10") Integer limit,@RequestBody WUsers wUsers ){
+        map.clear();
+        PageHelper.startPage(page,limit);
+        try {
+            List<WUsers> byPage = wUsersService.findByTj(wUsers);
+            PageInfo<WUsers> pageInfo = new PageInfo<>(byPage);
+            map.put("count",pageInfo.getTotal());
+            map.put("data",pageInfo.getList());
+            map.put("code",0);
+            map.put("msg",1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("msg",e.getMessage());
+        }
+        return map;
+    }
+    @PostMapping("/insert")
+    @ApiOperation("新增")
+    public Map<String,Object> insert(@RequestBody WUsers wUsers) {
+        map.clear();
+        try {
+            wUsersService.insert(wUsers);
+            map.put("msg",1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("mas",e.getMessage());
+        }
+        return map;
+    }
+
+    @RequestMapping("/update")
+    @ApiOperation("修改")
+    public Map<String,Object> update(@RequestBody WUsers wUsers) {
+        System.out.println(wUsers);
+        map.clear();
+        try {
+            wUsersService.update(wUsers);
+            map.put("msg",1);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("msg",e.getMessage());
+        }
+        return map;
+    }
+
+    @RequestMapping("/delete")
+    @ApiOperation("通过ID删除单个")
+    public Map<String,Object> deleteById(@RequestBody WUsers wUsers) {
+        try {
+            wUsersService.deleteById(wUsers);
+            map.put("msg",1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("msg",e.getMessage());
+        }
+        return map;
+    }
+
+    //    批量删除
+    @RequestMapping("/deleteSelect")
+    public Map<String,Object> deleteSelect(String id){
+        map.clear();
+        try {
+            List<String> list = new ArrayList<>();
+            String[] strs = id.split(",");
+            for (String str : strs) {
+                list.add(str);
+            }
+            wUsersService.deleteSelect(list);
+            map.put("msg",1);
         } catch (Exception e) {
             e.printStackTrace();
             map.put("msg",e.getMessage());

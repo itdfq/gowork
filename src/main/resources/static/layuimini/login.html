@@ -43,6 +43,7 @@
 </div>
 <script th:src="@{/static/login/layui.all.js}" type="text/javascript"></script>
 <script>
+    //设置日期格式
     Date.prototype.Format = function (fmt) {
         var o = {
             "M+": this.getMonth() + 1, //月份
@@ -59,16 +60,37 @@
         return fmt;
     }
 
+    //计算时间差（相差分钟）
+    function timeDifference(startTime,endTime){
+        var start1=startTime.split(":");
+        var startAll=parseInt(start1[0]*60)+parseInt(start1[1]);
+
+        var end1=endTime.split(":");
+        var endAll=parseInt(end1[0]*60)+parseInt(end1[1]);
+
+        console.log("时间差==="+(endAll-startAll));
+        return (endAll-startAll);
+
+    }
+
+
     layui.use(['layer'],function () {
         var layer = layui.layer;
     })
-    var d = new Date();
-    var nowdate = d.Format("yyyy-MM-dd HH:mm:ss")
+    var das = new Date();
+    //设置签到日期
+    var nowdate = das.Format("yyyy-MM-dd")
     // var nowdate = d.toLocaleString('cn',{hour12:false})
 
+    //获取早上签到时间
+    var date=das.Format("HH:mm:ss");
+    var ds ="09:00:00";
+    //设置签退时间 如果下与则显示早
+    var ds1="17:30:00"
 
-
+    //签到方法
     $("#loginBtn").click(function () {
+
         var loginUsername = $('#loginUsername').val();
         var loginPassword = $('#loginPassword').val();
         if ($.trim(loginUsername) == '' || $.trim(loginUsername).length<=0){
@@ -80,30 +102,41 @@
             layer.alert("密码不能为空",{icon: 5});
             return false;
         }
-        var d={"username":loginUsername,"password":loginPassword,"ontime":nowdate};
+        if (date>ds){
+            var ssd="迟到"+timeDifference(ds,date)+"分钟";
+            var d={"username":loginUsername,"password":loginPassword,"ontime":date,"onmark":ssd,"nowdate":nowdate};
+        }else{
+            var qwe="早来了"+timeDifference(date,ds)+"分钟";
+            var d={"username":loginUsername,"password":loginPassword,"on0000time":date,"onmark":qwe,"nowdate":nowdate};
+        }
         $.ajax({
-            url:'/onworks/insert',
+            url:'/sum/qiandao',
             data:JSON.stringify(d),
             type:"post",
             dataType:'json',
             contentType: "application/json;charset=utf-8",
             success:function (data){
                 if (data.msg!=1){
+                        layer.alert(data.msg,{icon:5});
                     // alert(data.msg);
-                    layer.alert(data.msg,{icon:5});
                     // layer.alert(data.msg+"请重新登录",{icon: 5});
                     // window.self.location="/"
                     // location.reload()
                 }else{
                     // layer.alert("登录成功",{icon: 6});
                     // window.self.location="/home"
-                    layer.alert("签到成功",{icon:6});
+                    if (date>ds){
+                            layer.alert("对不起，您已迟到"+timeDifference(ds,date)+"分钟",{icon:5});
+                    }else{
+                            layer.alert("签到成功",{icon:6});
+                     }
                 }
             }
 
         });
 
     })
+    //签退
     $("#offBtn").click(function () {
         var loginUsername = $('#loginUsername').val();
         var loginPassword = $('#loginPassword').val();
@@ -116,9 +149,15 @@
             layer.alert("密码不能为空",{icon: 5});
             return false;
         }
-        var d={"username":loginUsername,"password":loginPassword,"offtime":nowdate};
+        if (date<ds1){
+            var ssd="早退"+timeDifference(date,ds1)+"分钟";
+            var d={"username":loginUsername,"password":loginPassword,"offtime":date,"offmark":ssd,"nowdate":nowdate};
+        }else{
+            var sda="加班了"+timeDifference(ds1,date)+"分钟";
+            var d={"username":loginUsername,"password":loginPassword,"offtime":date,"offmark": sda,"nowdate":nowdate};
+        }
         $.ajax({
-            url:'/offworks/insert',
+            url:'/sum/qiantui',
             data:JSON.stringify(d),
             type:"post",
             dataType:'json',
@@ -132,13 +171,19 @@
                 }else{
                     // layer.alert("登录成功",{icon: 6});
                     // window.self.location="/home"
-                    layer.alert("签退成功",{icon:6});
+                    if (data<ds1){
+                        layer.alert("您今天早退了"+timeDifference(data,ds1)+"分钟",{icon:6});
+                    }else{
+                        layer.alert("签退成功",{icon:6});
+                    }
+
                 }
             }
 
         });
 
     })
+    //登录
     $("#login").click(function () {
         var loginUsername = $('#loginUsername').val();
         var loginPassword = $('#loginPassword').val();
@@ -163,7 +208,7 @@
                     layer.alert("登录成功",{icon:6});
 
                     // layer.alert(data.msg+"请重新登录",{icon: 5});
-                    // window.self.location="/"
+                    window.location.href="/home"
                     // location.reload()
                 }else{
                     layer.alert(data.msg,{icon:5});

@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="../../lib/layui-v/css/layui.css" media="all">
     <link rel="stylesheet" href="../../css/public.css" media="all">
+    <script src="/static/layuimini/js/jquery.min.js"></script>
     <style>
         body {
             background-color: #ffffff;
@@ -16,6 +17,13 @@
 </head>
 <body>
 <div class="layui-form layuimini-form">
+    <div class="layui-form-item" style="display: none">
+        <label class="layui-form-label required">用户id</label>
+        <div class="layui-input-block">
+            <input type="text" id="id" name="id" lay-verify="required" lay-reqtext="用户账号不能为空" placeholder="请输入用户账号"   class="layui-input">
+            <!--            lay-reqtext="手机不能为空" placeholder="请输入手机"-->
+        </div>
+    </div>
     <div class="layui-form-item">
         <label class="layui-form-label required">用户账号</label>
         <div class="layui-input-block">
@@ -51,30 +59,42 @@
         </div>
     </div>
 </div>
+
+
+
+
+
 <script src="../../lib/layui-v/layui.js" charset="utf-8"></script>
 <script>
-    layui.use(['form'], function () {
+
+    layui.use(['form','laydate'], function () {
         var form = layui.form,
             layer = layui.layer,
+            laydate = layui.laydate,
             $ = layui.$;
+
+        //日期
+        $('.my_class_name').each(function() {
+            laydate.render({
+                elem: this       //使用this指向当前元素,不能使用class名, 否则只有第一个有效
+            });
+        })
 
         //监听提交
         form.on('submit(saveBtn)', function (data) {
-
-
             $.ajax({
-                url: '/wUserss/insert',
+                url: '/wUserss/update',
                 data: JSON.stringify(data.field),
                 contentType: "application/json;charset=utf-8",
-                dataType:'json',
+                dataType: 'json',
                 type: "post",
                 async: false,//false为同步，这个Ajax请求将整个浏览器锁死
-                success:function (d){
-                    if (d.msg==1){
-                        layer.msg("添加成功", {icon: 6});
-                        window.parent.location.reload();
-                    }else {
-                        layer.msg("添加失败", {icon: 5});
+                success: function (d) {
+                    if (d.msg == 1) {
+                        layer.msg("修改成功", {icon: 6});
+                        window.parent.location.reload();//修改成功后刷新父界面
+                    } else {
+                        layer.msg("修改失败", {icon: 5});
                     }
                 }
             })
@@ -84,6 +104,7 @@
         });
 
     });
+
 </script>
 </body>
 </html>

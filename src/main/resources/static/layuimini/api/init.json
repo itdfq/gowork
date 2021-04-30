@@ -1,10 +1,10 @@
 {
   "homeInfo": {
     "title": "首页",
-    "href": "/static/layuimini/page/welcome-1.html?t=1"
+    "href": "/static/layuimini/page/welcome-1.html"
   },
   "logoInfo": {
-    "title": "棉花数据管理",
+    "title": "签到管理系统",
     "image": "/static/layuimini/images/logo.png",
     "href": ""
   },
@@ -22,17 +22,12 @@
           "target": "_self"
         },
         {
-          "title": "栽培数据管理",
-          "href": "/static/layuimini/page/table_zpgjsj.html",
+          "title": "签到管理",
+          "href": "/static/layuimini/page/table1.html",
           "icon": "fa fa-gears",
           "target": "_self"
-        },
-        {
-          "title": "栽培采集数据管理",
-          "href": "/static/layuimini/page/table_zcsj.html",
-          "icon": "fa fa-window-maximize",
-          "target": "_self"
         }
+
       ]
     }
   ]

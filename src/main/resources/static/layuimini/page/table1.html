@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../lib/layui-v/css/layui.css" media="all">
+    <link rel="stylesheet" href="../css/public.css" media="all">
+    <script src="../js/jquery.min.js"></script>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">姓名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="realname" name="realname" autocomplete="off" class="layui-input ">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">开始日期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="starttime" name="starttime" autocomplete="off" class="layui-input my_class_name">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">结束日期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="endtime" name="endtime" autocomplete="off" class="layui-input my_class_name">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <script type="text/html" id="toolbarDemo">
+
+        </script>
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+    </div>
+</div>
+<script src="../lib/layui-v/layui.js" charset="utf-8"></script>
+<script>
+    $(function (){
+        $.ajax({
+            url: '/wUserss/findByUser',
+            type: 'post',
+            success: function (data) {
+                if (data.msg != 1) {
+                    layer.msg("登录过期请重新登录", {icon: 5});
+                    window.self.location = "/";
+                    return;
+                }
+            }
+        })
+    })
+    layui.use(['form', 'table','laydate'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            laydate = layui.laydate,
+            table = layui.table;
+        //日期
+        $('.my_class_name').each(function () {
+            laydate.render({
+                elem: this       //使用this指向当前元素,不能使用class名, 否则只有第一个有效
+            });
+        })
+
+        $(function () {
+            $.ajax({
+                url: '/wUserss/findByUser',
+                type: 'post',
+                success: function (data) {
+                    if (data.msg != 1) {
+                        layer.msg("登录过期请重新登录", {icon: 5});
+                        window.self.location = "/";
+                        return;
+                    } else {
+                        if (data.role != "1") {
+                            layer.msg("对不起您无权限查看", {icon: 5});
+                        } else {
+                            table.render({
+                                elem: '#currentTableId',
+                                url: '/sum/findByPage',
+                                toolbar: '#toolbarDemo',
+                                cellMinWidth: 80, //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+                                defaultToolbar: ['filter', 'exports', 'print', {
+                                    title: '提示',
+                                    icon: 'layui-icon-tips'
+                                }]
+                                , id: "id"
+                                , cols: [[
+                                    {type: 'checkbox', fixed: 'left', align: 'center'}
+                                    , {field: 'username', title: '用户名', width: '10%'}
+                                    , {field: 'realname', title: '真实姓名', width: '10%', sort: true, totalRow: true}
+                                    , {field: 'ontime', title: '签到时间', width: '10%', sort: true}
+                                    , {field: 'onmark', title: '签到状态', width: '15%', sort: true}
+                                    , {field: 'offtime', title: '签退时间', width: '15%', sort: true}
+                                    , {field: 'offmark', title: '签退状态', width: '15%', sort: true}
+                                    , {field: 'nowdate', title: '日期', width: '15%', sort: true}
+
+                                ]], page: true
+                            });
+                        }
+                    }
+                }
+            })
+        })
+
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            var result = data.field;
+            // 执行搜索重载
+            $.ajax({
+                url: '/wUserss/findByUser',
+                type: 'post',
+                success: function (data) {
+                    if (data.msg != 1) {
+                        alert(data.msg);
+                        window.self.location = "/home"
+                        // $.messager.alert({
+                        //     title:'提示',
+                        //     msg:'读取数据异常：'+map.msg
+                        // });
+                        return;
+                    } else {
+                        table.reload('id', {
+                            url: '/sum/findByTJ'
+                            , method: 'post'
+                            , where: {
+                                'starttime': result.starttime,
+                                'endtime':result.endtime,
+                                'realname':result.realname
+                            }
+                            , contentType: 'application/json'
+                            , page: {
+                                curr: 1 //重新从第 1 页开始
+                            }
+                        })
+                    }
+                }
+
+            })
+
+
+            return false;
+
+        });
+    })
+
+</script>
+
+</body>
+</html>

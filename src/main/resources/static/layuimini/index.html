@@ -24,25 +24,25 @@
     <style id="layuimini-bg-color">
     </style>
     <script>
-        $(function (){
-            $.ajax({
-                url: '/tAdmins/findByUser',
-                type: 'post',
-                success: function (data) {
-                    if (data.msg != 1) {
-                        // layer.msg('也可以这样', {
-                        //     time: 20000, //20s后自动关闭
-                        //     btn: ['明白了', '知道了']
-                        // });
-                        // layer.msg("登录过期请重新登录", {time:3000,icon: 5});
-                        alert("登录过期，请重新登录")
-                        window.self.location = "/";
-
-                        return;
-                    }
-                }
-            })
-        })
+        // $(function (){
+        //     $.ajax({
+        //         url: '/tAdmins/findByUser',
+        //         type: 'post',
+        //         success: function (data) {
+        //             if (data.msg != 1) {
+        //                 // layer.msg('也可以这样', {
+        //                 //     time: 20000, //20s后自动关闭
+        //                 //     btn: ['明白了', '知道了']
+        //                 // });
+        //                 // layer.msg("登录过期请重新登录", {time:3000,icon: 5});
+        //                 alert("登录过期，请重新登录")
+        //                 window.self.location = "/";
+        //
+        //                 return;
+        //             }
+        //         }
+        //     })
+        // })
 
     </script>
 </head>
@@ -83,7 +83,7 @@
                 </li>
                 <li class="layui-nav-item layuimini-setting">
 <!--                    <a href="javascript:;">admin</a>-->
-                    <a th:if="${session.user}" ><span th:text="${session.user.username}"/></a>
+                    <a th:if="${session.user}" ><span th:text="${session.user.rename}"/></a>
 
                     <dl class="layui-nav-child">
 <!--                        <dd>-->
